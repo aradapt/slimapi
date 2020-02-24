@@ -1,5 +1,9 @@
 # SlimApp RESTful API
+<<<<<<< HEAD
 # Tommy Akarawat
+=======
+# Tommy
+>>>>>>> 2738c5acf74b98739824f1d41132ba613e845375
 This is a RESTful api built with the SlimPHP framework and uses MySQL for storage.
 
 ### Version
