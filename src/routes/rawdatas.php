@@ -1,7 +1,7 @@
 <?php
-//http://localhost:8888/loc8api/public/api/customer/2
-//http://localhost:8888/loc8api/public/api/customers
-//http://localhost:8888/loc8api/public/api/venders
+// Exam:
+//http://localhost:8888/loc8api/public/rawdata/api/customer/2
+//http://localhost:8888/loc8api/public/rawdata/api/rawdatas
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -20,8 +20,8 @@ $app->add(function ($req, $res, $next) {
             ->withHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
 });
 
-// Get All Customers
-$app->get('/api/customers', function(Request $request, Response $response){
+// Get All rawdatas
+$app->get('/api/rawdatas', function(Request $request, Response $response){
     $sql = "SELECT * FROM customers";
 
     try{
@@ -31,9 +31,9 @@ $app->get('/api/customers', function(Request $request, Response $response){
         $db = $db->connect();
 
         $stmt = $db->query($sql);
-        $customers = $stmt->fetchAll(PDO::FETCH_OBJ);
+        $rawdatas = $stmt->fetchAll(PDO::FETCH_OBJ);
         $db = null;
-        echo json_encode($customers);
+        echo json_encode($rawdatas);
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
@@ -41,18 +41,20 @@ $app->get('/api/customers', function(Request $request, Response $response){
 
 // Get Single Customer
 $app->get('/api/customer/{id}', function(Request $request, Response $response){
-    $id = $request->getAttribute('id'); //รับค่า id จาก URL มา
+    $id = $request->getAttribute('id');
 
-    $sql = "SELECT * FROM customers WHERE id = $id"; // เตรียมคำสั่ง SQL
+    $sql = "SELECT * FROM customers WHERE id = $id";
 
     try{
-        $db = new db(); // สร้าง Object รอ
-        $db = $db->connect(); // เปิดใช้ ฐานข้อมูล
+        // Get DB Object
+        $db = new db();
+        // Connect
+        $db = $db->connect();
 
-        $stmt = $db->query($sql); // เอาคำสั่ง sql เข้าไปจัดการ แล้วเอาผลลัพธ์มาใส่ตัวแปน $stmt
-        $customer = $stmt->fetch(PDO::FETCH_OBJ); // เอาผลลัพธ์ที่ได้มากระจายใส่ตัวแปร $customer
-        $db = null; // คืนค่าตัวแปรให้ระบบ
-        echo json_encode($customer); // เอาตัวแปร $customer มาเขียนเป็น JSON เพื่อเอาไปใช้งาน
+        $stmt = $db->query($sql);
+        $customer = $stmt->fetch(PDO::FETCH_OBJ);
+        $db = null;
+        echo json_encode($customer);
     } catch(PDOException $e){
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
@@ -67,14 +69,9 @@ $app->post('/api/customer/add', function(Request $request, Response $response){
     $address = $request->getParam('address');
     $city = $request->getParam('city');
     $state = $request->getParam('state');
-    $fax = $request->getParam('fax');
-    $age = $request->getParam('age');
-    $idcar = $request->getParam('idcar');
-    $iddriver = $request->getParam('iddriver');
-    $idtax = $request->getParam('idtax');
 
-    $sql = "INSERT INTO customers (first_name,last_name,phone,email,address,city,state,fax,age,idcar,iddriver,idtax) VALUES
-    (:first_name,:last_name,:phone,:email,:address,:city,:state,:fax,:age,:idcar,:iddriver,:idtax)";
+    $sql = "INSERT INTO customers (first_name,last_name,phone,email,address,city,state) VALUES
+    (:first_name,:last_name,:phone,:email,:address,:city,:state)";
 
     try{
         // Get DB Object
@@ -91,11 +88,6 @@ $app->post('/api/customer/add', function(Request $request, Response $response){
         $stmt->bindParam(':address',    $address);
         $stmt->bindParam(':city',       $city);
         $stmt->bindParam(':state',      $state);
-        $stmt->bindParam(':fax',      $fax);
-        $stmt->bindParam(':age',      $age);
-        $stmt->bindParam(':idcar',      $idcar);
-        $stmt->bindParam(':iddriver',      $iddriver);
-        $stmt->bindParam(':idtax',      $idtax);
 
         $stmt->execute();
 
@@ -109,7 +101,6 @@ $app->post('/api/customer/add', function(Request $request, Response $response){
 // Update Customer
 $app->put('/api/customer/update/{id}', function(Request $request, Response $response){
     $id = $request->getAttribute('id');
-    
     $first_name = $request->getParam('first_name');
     $last_name = $request->getParam('last_name');
     $phone = $request->getParam('phone');
@@ -117,11 +108,6 @@ $app->put('/api/customer/update/{id}', function(Request $request, Response $resp
     $address = $request->getParam('address');
     $city = $request->getParam('city');
     $state = $request->getParam('state');
-    $fax = $request->getParam('fax');
-    $age = $request->getParam('age');
-    $idcar = $request->getParam('idcar');
-    $iddriver = $request->getParam('iddriver');
-    $idtax = $request->getParam('idtax');
 
     $sql = "UPDATE customers SET
 				first_name 	= :first_name,
@@ -130,13 +116,7 @@ $app->put('/api/customer/update/{id}', function(Request $request, Response $resp
                 email		= :email,
                 address 	= :address,
                 city 		= :city,
-                state		= :state,
-                fax         = :fax,
-                age         = :age,
-                idcar       = :idcar,
-                iddriver    = :iddriver,
-                idtax       = :idtax
-
+                state		= :state
 			WHERE id = $id";
 
     try{
@@ -154,11 +134,6 @@ $app->put('/api/customer/update/{id}', function(Request $request, Response $resp
         $stmt->bindParam(':address',    $address);
         $stmt->bindParam(':city',       $city);
         $stmt->bindParam(':state',      $state);
-        $stmt->bindParam(':fax',      $fax);
-        $stmt->bindParam(':age',      $age);
-        $stmt->bindParam(':idcar',      $idcar);
-        $stmt->bindParam(':iddriver',      $iddriver);
-        $stmt->bindParam(':idtax',      $idtax);
 
         $stmt->execute();
 
@@ -189,4 +164,3 @@ $app->delete('/api/customer/delete/{id}', function(Request $request, Response $r
         echo '{"error": {"text": '.$e->getMessage().'}';
     }
 });
-

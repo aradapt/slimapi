@@ -5,6 +5,7 @@
         private $dbuser = 'root';
         private $dbpass = '';
         private $dbname = 'slimapp';
+        //private $dbname = 'slimapp';
 
         // Connect
         public function connect(){
@@ -13,4 +14,5 @@
             $dbConnection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $dbConnection;
         }
+
     }
