@@ -4,6 +4,8 @@ use \Psr\Http\Message\ResponseInterface as Response;
 
 $app = new \Slim\App;
 
+// arada joint 020520
+
 $app->options('/{routes:.+}', function ($request, $response, $args) {
     return $response;
 });
